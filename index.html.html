@@ -1007,44 +1007,48 @@
 
     <script src="https://tally.so/widgets/embed.js"></script>
 
-  <script src="https://tally.so/widgets/embed.js"></script>
-<script>
-const form = document.getElementById('waitlist-form');
-const success = document.getElementById('form-success');
+ <script>
+  const form = document.getElementById('waitlist-form');
+  const success = document.getElementById('form-success');
 
-form.addEventListener('submit', function(e) {
+  form.addEventListener('submit', function(e) {
     e.preventDefault();
     const email = this.querySelector('.waitlist-input').value.trim();
 
+    // Basic validation
     if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-        alert('Please enter a valid email address.');
-        return;
+      alert('Please enter a valid email address.');
+      return;
     }
 
-    // Ensure Tally script is fully ready
-    function openTally() {
-        if (typeof Tally !== 'undefined' && Tally.openPopup) {
-            Tally.openPopup('44QV2o', {
-                layout: 'modal',
-                width: 500,
-                overlay: true,
-                emoji: { text: '🚩', animation: 'wave' },
-                prefill: { email: email },
-                onSubmit: function() {
-                    form.style.display = 'none';
-                    document.querySelector('.form-note').style.display = 'none';
-                    success.classList.add('show');
-                }
-            });
-        } else {
-            setTimeout(openTally, 100); // retry until ready
+    // Ensure Tally script is loaded
+    if (typeof Tally === 'undefined') {
+      // Load Tally script dynamically
+      const script = document.createElement('script');
+      script.src = 'https://tally.so/widgets/embed.js';
+      script.async = true;
+      script.onload = () => openTally(email);
+      document.body.appendChild(script);
+    } else {
+      openTally(email);
+    }
+
+    function openTally(emailValue) {
+      Tally.openPopup('44QV2o', {
+        layout: 'modal',
+        width: 500,
+        overlay: true,
+        emoji: { text: '🚩', animation: 'wave' },
+        prefill: { Email: emailValue }, // field labeled "Email" on Tally
+        onSubmit: function() {
+          form.style.display = 'none';
+          document.querySelector('.form-note').style.display = 'none';
+          success.classList.add('show');
         }
+      });
     }
-
-    openTally();
-});
+  });
 </script>
-
 
 </body>
 </html>
