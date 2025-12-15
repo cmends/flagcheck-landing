@@ -804,15 +804,6 @@
                     Paste your text conversation. AI analyzes it for red flags, manipulation tactics, and interest levels. Get the truth in 30 seconds.
                 </p>
                 
-                <!-- Add Demo GIF here (replace src with your actual GIF URL or path, e.g., upload to Vercel /public/demo.gif) -->
-                <section class="my-8 flex justify-center">
-                    <img
-                        src="https://placehold.co/600x400/png?text=Demo+GIF+Here" <!-- Replace with your GIF URL -->
-                        alt="FlagCheck Demo: Paste your text conversation and get instant AI red flag insights"
-                        class="rounded-lg shadow-lg max-w-full md:max-w-md"
-                    />
-                </section>
-
                 <div class="cta-group">
                     <a href="#waitlist" class="btn-primary">
                         Analyze My Texts →
@@ -943,47 +934,6 @@
                     <a href="#waitlist" class="btn-primary">Get Your Full Report →</a>
                 </div>
             </div>
-
-            <!-- Add Sharing Buttons for Sample Report -->
-            <div class="flex justify-center gap-4 mt-6">
-                <a 
-                    href="https://twitter.com/intent/tweet?url=https://flagcheck.app&text=Check out this AI red flag report from FlagCheck! 🚩 Is it a red flag or overthinking?"
-                    class="bg-blue-400 text-white px-4 py-2 rounded-md"
-                >
-                    Share on X
-                </a>
-                <a 
-                    href="https://www.facebook.com/sharer/sharer.php?u=https://flagcheck.app"
-                    class="bg-blue-600 text-white px-4 py-2 rounded-md"
-                >
-                    Share on Facebook
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials Section (New) -->
-    <section class="testimonials-section">
-        <div class="container">
-            <div class="section-header">
-                <p class="section-label">What users are saying</p>
-                <h2>Real feedback from early testers</h2>
-            </div>
-
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <p class="testimonial-quote">"Saved me from a toxic situationship—spot on with the gaslighting flags!"</p>
-                    <p class="testimonial-author">- Sarah, 28</p>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-quote">"Finally, no more overthinking! The interest level score is a game-changer."</p>
-                    <p class="testimonial-author">- Alex, 32</p>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-quote">"Quick and insightful—better than bugging friends every time."</p>
-                    <p class="testimonial-author">- Jordan, 25</p>
-                </div>
-            </div>
         </div>
     </section>
 
@@ -1035,11 +985,8 @@
                 <input type="email" class="waitlist-input" placeholder="Enter your email" required>
                 <button type="submit" class="waitlist-btn">Join Waitlist →</button>
             </form>
-            <p class="form-note">Privacy first: We don't store your texts—analyses are processed ephemerally and deleted immediately. No data sharing or spam.</p>
+            <p class="form-note">No spam. Just launch updates and your free report.</p>
             
-            <!-- Add Waitlist Counter (static placeholder; for dynamic, integrate Supabase JS fetch) -->
-            <p class="text-center mt-4 text-gray-600" id="waitlist-counter">Join 0+ others on the waitlist!</p> <!-- Update number manually or add JS fetch -->
-
             <div class="form-success" id="form-success">
                 <h3>You're on the list! 🎉</h3>
                 <p>We'll email you when FlagCheck launches with your free report.</p>
@@ -1066,61 +1013,22 @@
         
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            const emailInput = this.querySelector('.waitlist-input');
-            const email = emailInput.value.trim();
+            const email = this.querySelector('.waitlist-input').value;
             
-            // Basic validation
-            if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-                alert('Please enter a valid email address.');
-                return;
-            }
-            
-            // Wait for Tally to load
-            const waitForTally = setInterval(() => {
-                if (typeof Tally !== 'undefined') {
-                    clearInterval(waitForTally);
-                    Tally.openPopup('44QV2o', {
-                        layout: 'modal',
-                        width: 500;
-                        overlay: true,
-                        emoji: {
-                            text: '🚩',
-                            animation: 'wave'
-                        },
-                        prefill: {  // Use prefill if visible field; switch to hiddenFields if hidden
-                            email: email
-                        },
-                        onSubmit: function(payload) {
-                            console.log('Tally submission successful:', payload);
-                            // Hide form
-                            form.style.display = 'none';
-                            document.querySelector('.form-note').style.display = 'none';
-                            // Show success
-                            success.classList.add('show');
-                        },
-                        onClose: function() {
-                            console.log('Tally popup closed');
-                        }
-                    });
+            // Open Tally popup with prefill
+            Tally.openPopup('44QV2o', {
+                prefill: {
+                    email: email
+                },
+                onSubmit: function() {
+                    // Hide form
+                    form.style.display = 'none';
+                    document.querySelector('.form-note').style.display = 'none';
+                    
+                    // Show success
+                    success.classList.add('show');
                 }
-            }, 100);
-
-            // Timeout if script doesn't load in 5s
-            setTimeout(() => {
-                clearInterval(waitForTally);
-                if (typeof Tally === 'undefined') {
-                    console.error('Tally script failed to load');
-                    alert('Sorry, there was an issue loading the signup form. Please try again later.');
-                }
-            }, 5000);
-        });
-
-        // A/B Test CTA Button Text (for all .waitlist-btn and similar CTAs)
-        const ctaButtons = document.querySelectorAll('.waitlist-btn, .btn-primary');
-        const variants = ['Join Waitlist →', 'Get Free Report Now →'];
-        ctaButtons.forEach(button => {
-            const randomVariant = variants[Math.floor(Math.random() * variants.length)];
-            button.textContent = randomVariant;
+            });
         });
 
         // Smooth scroll
@@ -1133,16 +1041,6 @@
                 }
             });
         });
-
-        // Optional: Dynamic Waitlist Counter (if Supabase is set up; add your SUPABASE_URL and ANON_KEY)
-        // const supabaseUrl = 'YOUR_SUPABASE_URL';
-        // const supabaseKey = 'YOUR_ANON_KEY';
-        // const supabase = { from: async (table) => { return { select: async () => ({ count: 0 }) }; } }; // Placeholder
-        // async function fetchCount() {
-        //     const { count: rowCount } = await supabase.from('waitlist').select('*', { count: 'exact', head: true });
-        //     document.getElementById('waitlist-counter').textContent = `Join ${rowCount || 0}+ others on the waitlist!`;
-        // }
-        // fetchCount();
     </script>
 </body>
 </html>
