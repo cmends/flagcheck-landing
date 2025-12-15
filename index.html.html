@@ -1007,58 +1007,44 @@
 
     <script src="https://tally.so/widgets/embed.js"></script>
 
-  <script>
-    // Form handling
-    const form = document.getElementById('waitlist-form');
-    const success = document.getElementById('form-success');
-    
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const email = this.querySelector('.waitlist-input').value.trim();
-        
-        // Basic validation
-        if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-            alert('Please enter a valid email address.');
-            return;
+  <script src="https://tally.so/widgets/embed.js"></script>
+<script>
+const form = document.getElementById('waitlist-form');
+const success = document.getElementById('form-success');
+
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = this.querySelector('.waitlist-input').value.trim();
+
+    if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        alert('Please enter a valid email address.');
+        return;
+    }
+
+    // Ensure Tally script is fully ready
+    function openTally() {
+        if (typeof Tally !== 'undefined' && Tally.openPopup) {
+            Tally.openPopup('44QV2o', {
+                layout: 'modal',
+                width: 500,
+                overlay: true,
+                emoji: { text: '🚩', animation: 'wave' },
+                prefill: { Email: email },
+                onSubmit: function() {
+                    form.style.display = 'none';
+                    document.querySelector('.form-note').style.display = 'none';
+                    success.classList.add('show');
+                }
+            });
+        } else {
+            setTimeout(openTally, 100); // retry until ready
         }
+    }
 
-        // Wait for Tally to load
-        const waitForTally = setInterval(() => {
-            if (typeof Tally !== 'undefined') {
-                clearInterval(waitForTally);
-                Tally.openPopup('44QV2o', {
-                    layout: 'modal',
-                    width: 500,
-                    overlay: true,
-                    emoji: {
-                        text: '🚩',
-                        animation: 'wave'
-                    },
-                    prefill: {
-                        Email: email // <-- This is the key prefill line
-                    },
-                    onSubmit: function() {
-                        // Hide form
-                        form.style.display = 'none';
-                        document.querySelector('.form-note').style.display = 'none';
-                        
-                        // Show success
-                        success.classList.add('show');
-                    }
-                });
-            }
-        }, 100);
-
-        // Timeout if script doesn't load in 5s
-        setTimeout(() => {
-            clearInterval(waitForTally);
-            if (typeof Tally === 'undefined') {
-                console.error('Tally script failed to load');
-                alert('Sorry, there was an issue loading the signup form. Please try again later.');
-            }
-        }, 5000);
-    });
+    openTally();
+});
 </script>
+
 
 </body>
 </html>
