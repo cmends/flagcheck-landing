@@ -1007,28 +1007,55 @@
 
     <script src="https://tally.so/widgets/embed.js" async></script>
     <script>
-        // Form handling with Tally submission
+        // Form handling
         const form = document.getElementById('waitlist-form');
         const success = document.getElementById('form-success');
         
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            const email = this.querySelector('.waitlist-input').value;
+            const email = this.querySelector('.waitlist-input').value.trim();
             
-            // Open Tally popup with prefill
-            Tally.openPopup('44QV2o', {
-                prefill: {
-                    email: email
-                },
-                onSubmit: function() {
-                    // Hide form
-                    form.style.display = 'none';
-                    document.querySelector('.form-note').style.display = 'none';
-                    
-                    // Show success
-                    success.classList.add('show');
+            // Basic validation
+            if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+
+            // Wait for Tally to load
+            const waitForTally = setInterval(() => {
+                if (typeof Tally !== 'undefined') {
+                    clearInterval(waitForTally);
+                    Tally.openPopup('44QV2o', {
+                        layout: 'modal',
+                        width: 500,
+                        overlay: true,
+                        emoji: {
+                            text: '🚩',
+                            animation: 'wave'
+                        },
+                        prefill: {
+                            Email: email  // Use 'Email' as per the label in the screenshot
+                        },
+                        onSubmit: function() {
+                            // Hide form
+                            form.style.display = 'none';
+                            document.querySelector('.form-note').style.display = 'none';
+                            
+                            // Show success
+                            success.classList.add('show');
+                        }
+                    });
                 }
-            });
+            }, 100);
+
+            // Timeout if script doesn't load in 5s
+            setTimeout(() => {
+                clearInterval(waitForTally);
+                if (typeof Tally === 'undefined') {
+                    console.error('Tally script failed to load');
+                    alert('Sorry, there was an issue loading the signup form. Please try again later.');
+                }
+            }, 5000);
         });
 
         // Smooth scroll
